@@ -1,20 +1,20 @@
-# name: Release
+name: Production Release
 
-# on:
-#   push:
-#     # branches: 
-#     #   - 'release/**'
+on:
+  push:
+    # branches: 
+    #   - 'release/**'
 
-# jobs:
-#   # This workflow contains a single job called "release"
-#   release:
-#     name: Build & Deploy to Cloud run
-#     environment: totolive
-#     runs-on: ubuntu-latest
+jobs:
+  # This workflow contains a single job called "release"
+  release:
+    name: Build & Deploy to Cloud run
+    environment: totolive
+    runs-on: ubuntu-latest
 
-#     steps:
-#     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-#     - uses: actions/checkout@v2
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
 
 #     - name: Login to Container Registry
 #       uses: docker/login-action@v1

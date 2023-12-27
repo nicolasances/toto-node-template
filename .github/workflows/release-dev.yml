@@ -1,17 +1,17 @@
-# name: Release
+name: Dev Release
 
-# on:
-#   push:
-#     branches: 
-#       - 'feature/**'
-#       - main
+on:
+  push:
+    branches: 
+      - 'feature/**'
+      - main
 
-# jobs:
-#   # This workflow contains a single job called "release"
-#   release:
-#     name: Build & Deploy to Cloud run
-#     environment: totoexperiments
-#     runs-on: ubuntu-latest
+jobs:
+  # This workflow contains a single job called "release"
+  release:
+    name: Build & Deploy to Cloud run
+    environment: totoexperiments
+    runs-on: ubuntu-latest
 
 #     steps:
 #     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
