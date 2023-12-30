@@ -22,5 +22,12 @@ git remote set-url origin <new-repo-url>
 Install NPM dependencies through `npm i` and then you should be able to start the microservice through <br>
 `npm run start:dev`
 
+## 5. Change core configurations
+The following will need to be done: 
+ - Update `index.ts` by chaning the API name and adding the endpoints of the service
+ - Uncomment the `github workflows` job parts
+ - Update `Config.ts` to make sure you're downloading the right secrets and that the configurations are ok (e.g. db names, collections, etc..)
+ - Update `package.json` and change the **package name** and eventually description and version
+
 ## What doesn't this template cover yet? 
  1. **Terraforming of the microservice**. This still has to be done separately. 
