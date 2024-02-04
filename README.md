@@ -32,3 +32,13 @@ The following will need to be done:
 ## 6. Terraforming
 The folder `terraform` contains the terraform file for the microservice. <br>
 Replace the occurrences of `xxx` with your microservice name and run the terraform file in the right environment (where the variables are set).
+
+Before running the `terraform apply`, remember to do the following: 
+ 1. Set any needed variables (e.g. `toto_ms_xxx_mongo_user`)
+ 2. Create any DB configuration needed first (e.g. create the user on the db)
+
+Remember that to create a user on Mongo, you should run this: 
+```
+use <db_name>
+db.createUser({user: "toto-ms-xxx", pwd: passwordPrompt(), roles: [{db: "<db_name>", role: "readWrite"}]})
+```
