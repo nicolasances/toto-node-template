@@ -29,5 +29,6 @@ The following will need to be done:
  - Update `Config.ts` to make sure you're downloading the right secrets and that the configurations are ok (e.g. db names, collections, etc..)
  - Update `package.json` and change the **package name** and eventually description and version
 
-## What doesn't this template cover yet? 
- 1. **Terraforming of the microservice**. This still has to be done separately. 
+## 6. Terraforming
+The folder `terraform` contains the terraform file for the microservice. <br>
+Replace the occurrences of `xxx` with your microservice name and run the terraform file in the right environment (where the variables are set).
