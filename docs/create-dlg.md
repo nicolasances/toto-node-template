@@ -6,12 +6,12 @@ A Delegate implements `TotoDelegate`
 An example of Delegate implementation is the following: 
 ```
 import { Request } from "express";
-import { ExecutionContext } from "../controller/model/ExecutionContext";
-import { TotoDelegate } from "../controller/model/TotoDelegate";
-import { UserContext } from "../controller/model/UserContext";
-import { TotoRuntimeError } from "../controller/model/TotoRuntimeError";
-import { ValidationError } from "../controller/validation/Validator";
 import { ControllerConfig } from "../Config";
+import { TotoDelegate } from "toto-api-controller/dist/model/TotoDelegate";
+import { UserContext } from "toto-api-controller/dist/model/UserContext";
+import { ExecutionContext } from "toto-api-controller/dist/model/ExecutionContext";
+import { ValidationError } from "toto-api-controller/dist/validation/Validator";
+import { TotoRuntimeError } from "toto-api-controller/dist/model/TotoRuntimeError";
 
 
 export class PostExpense implements TotoDelegate {
