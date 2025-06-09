@@ -32,6 +32,20 @@ resource "google_project_iam_member" "toto-ms-xxx-role-pubsub" {
     member = format("serviceAccount:%s", google_service_account.toto-ms-xxx-service-account.email)
 }
 
+# --------------------------------------------------------------
+# 2. Artifact Repository
+# ---------------------------------------------------------------
+resource "google_artifact_registry_repository" "toto-ms-xxx-registry" {
+    location = var.gcp_region
+    repository_id = "toto-ms-xxx"
+    format = "DOCKER"
+    description = "Toto MS XXX Artifact Registry"
+    labels = {
+        "created_by" = "terraform"
+        "project" = var.gcp_pid
+    }
+}
+
 # ---------------------------------------------------------------
 # 3. Github environment secrets & variables
 # ---------------------------------------------------------------
