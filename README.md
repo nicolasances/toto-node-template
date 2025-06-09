@@ -42,3 +42,7 @@ Remember that to create a user on Mongo, you should run this:
 use <db_name>
 db.createUser({user: "toto-ms-xxx", pwd: passwordPrompt(), roles: [{db: "<db_name>", role: "readWrite"}]})
 ```
+
+## 7. Create your first Endpoint
+To do that, follow this resource: 
+ * [Create a Delegate (endpoint)](./docs/create-dlg.md)
