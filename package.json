@@ -23,7 +23,7 @@
     "mongodb": "^6.2.0",
     "path": "^0.12.7",
     "request": "^2.88.2",
-    "toto-api-controller": "^11.0.2"
+    "toto-api-controller": "^12.0.4"
   },
   "devDependencies": {
     "@types/connect-busboy": "^1.0.2",
