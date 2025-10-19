@@ -39,8 +39,8 @@ To do that, follow this resource:
 ## 7. Configuring for Cloud Deployment
 
 Toto Microservices can be deployed:
-* [On GCP (Cloud Run)](#deploying-on-gcp)
-* [On AWS (ECS)](#deploying-on-aws)
+* [On GCP (Cloud Run)](#deploying-on-gcp-cloud-run)
+* [On AWS (ECS)](#deploying-on-aws-ecs)
 
 
 ### Database
