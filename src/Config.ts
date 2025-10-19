@@ -1,11 +1,5 @@
-import { TotoAuthProvider } from "./totoauth/TotoAuthProvider";
-import { MongoClient, ServerApiVersion } from 'mongodb';
-import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
-import { TotoControllerConfig } from "toto-api-controller/dist/model/TotoControllerConfig";
-import { CustomAuthVerifier } from "toto-api-controller/dist/model/CustomAuthVerifier";
-import { ValidatorProps } from "toto-api-controller/dist/model/ValidatorProps";
-
-const secretManagerClient = new SecretManagerServiceClient();
+import { MongoClient } from 'mongodb';
+import { TotoControllerConfig, ValidatorProps, Logger, SecretsManager } from "toto-api-controller";
 
 const dbName = 'mydb';
 const collections = {
@@ -14,59 +8,55 @@ const collections = {
 
 export class ControllerConfig implements TotoControllerConfig {
 
+    logger: Logger | undefined;
+
     mongoUser: string | undefined;
     mongoPwd: string | undefined;
     mongoHost: string | undefined;
     expectedAudience: string | undefined;
     totoAuthEndpoint: string | undefined;
+    jwtSigningKey: string | undefined;
 
 
     async load(): Promise<any> {
 
+        const env = process.env.HYPERSCALER == 'aws' ? (process.env.ENVIRONMENT ?? 'dev') : process.env.GCP_PID;
+        const hyperscaler = process.env.HYPERSCALER == 'aws' ? 'aws' : 'gcp';
+
+        if (!process.env.ENVIRONMENT) this.logger?.compute("", `No environment provided, loading default configuration`);
+        if (!process.env.HYPERSCALER) this.logger?.compute("", `No hyperscaler provided, loading default configuration`);
+
+        this.logger?.compute("", `Loading configuration for environment [${env}] on hyperscaler [${hyperscaler}]`);
+
+        const secretsManager = new SecretsManager(hyperscaler, env!, this.logger!);
+
         let promises = [];
 
-        promises.push(secretManagerClient.accessSecretVersion({ name: `projects/${process.env.GCP_PID}/secrets/mongo-host/versions/latest` }).then(([version]) => {
-
-            this.mongoHost = version.payload!.data!.toString();
-
+        promises.push(secretsManager.getSecret('toto-expected-audience').then((value) => {
+            this.expectedAudience = value;
         }));
 
-        promises.push(secretManagerClient.accessSecretVersion({ name: `projects/${process.env.GCP_PID}/secrets/toto-expected-audience/versions/latest` }).then(([version]) => {
-
-            this.expectedAudience = version.payload!.data!.toString();
-
+        promises.push(secretsManager.getSecret('jwt-signing-key').then((value) => {
+            this.jwtSigningKey = value;
         }));
 
-        // promises.push(secretManagerClient.accessSecretVersion({ name: `projects/${process.env.GCP_PID}/secrets/REPLACE-mongo-user/versions/latest` }).then(([version]) => {
-
-        //     this.mongoUser = version.payload!.data!.toString();
-
-        // }));
-
-        // promises.push(secretManagerClient.accessSecretVersion({ name: `projects/${process.env.GCP_PID}/secrets/REPLACE-mongo-pswd/versions/latest` }).then(([version]) => {
-
-        //     this.mongoPwd = version.payload!.data!.toString();
-
-        // }));
-
-        promises.push(secretManagerClient.accessSecretVersion({ name: `projects/${process.env.GCP_PID}/secrets/toto-auth-endpoint/versions/latest` }).then(([version]) => {
-
-            this.totoAuthEndpoint = version.payload!.data!.toString();
-
-        }));
-
-
+        // Other possible secrets to load:
+        // mongo-host
+        // mongo-user
+        // mongo-pswd
+        
         await Promise.all(promises);
 
     }
 
-    getCustomAuthVerifier(): CustomAuthVerifier {
-        return new TotoAuthProvider(String(this.totoAuthEndpoint))
+    getSigningKey(): string {
+        return String(this.jwtSigningKey);
     }
 
     getProps(): ValidatorProps {
 
         return {
+            customAuthProvider: "toto",
         }
     }
 
