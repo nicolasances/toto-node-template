@@ -105,6 +105,7 @@ Take the files `aws/codebuild/buildspec-*.yml` and update the following line, re
         * **modify the file**: 
             * rename all the occurencies of `toto-ms-ex1` with your microservice name.
             * rename all the resources name that should have the prefix `toto_ms_ex1_<something>` to `<name_of_your_ms>_<something>`.
+            * rename the path in the **path condition** of `aws_lb_listener_rule`: instead of `values = ["/ex1/*"]` it should contain the **base path that you configured for your service**.
         * **copy it to** `toto-aws-terra` 
     * **Run Terraform** on the target environment.
 
