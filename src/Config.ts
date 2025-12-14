@@ -31,7 +31,7 @@ export class ControllerConfig extends TotoControllerConfig {
 
     async getMongoClient() {
 
-        const mongoUrl = `mongodb://${this.mongoUser}:${this.mongoPwd}@${this.mongoHost}:27017`
+        const mongoUrl = `mongodb://${this.mongoUser}:${this.mongoPwd}@${this.mongoHost}:27017/${dbName}`
 
         return await new MongoClient(mongoUrl).connect();
     }
