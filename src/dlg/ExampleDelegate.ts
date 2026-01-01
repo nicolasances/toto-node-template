@@ -1,12 +1,10 @@
 import { Request } from "express";
-import { ExecutionContext, TotoDelegate, UserContext } from "toto-api-controller";
+import { TotoDelegate, UserContext } from "totoms";
 
-export class SayHello implements TotoDelegate {
+export class SayHello extends TotoDelegate {
 
-    async do(req: Request, userContext: UserContext, execContext: ExecutionContext): Promise<any> {
-
-        return { message: "Hello World!" }
-
+    async do(req: Request, userContext?: UserContext): Promise<any> {
+        return { message: "Hello World!" };
     }
 
 }

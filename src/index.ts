@@ -1,10 +1,23 @@
-import { TotoAPIController } from "toto-api-controller";
+import { getHyperscalerConfiguration, SupportedHyperscalers, TotoMicroservice, TotoMicroserviceConfiguration } from 'totoms';
 import { ControllerConfig } from "./Config";
+import { SayHello } from './dlg/ExampleDelegate';
 
-const api = new TotoAPIController(new ControllerConfig({ apiName: "toto-ms-ex1" }), { basePath: '/ex1' });
+const config: TotoMicroserviceConfiguration = {
+    serviceName: "toto-ms-ex1",
+    basePath: '/ex1',
+    environment: {
+        hyperscaler: process.env.HYPERSCALER as SupportedHyperscalers || "aws",
+        hyperscalerConfiguration: getHyperscalerConfiguration()
+    },
+    customConfiguration: ControllerConfig,
+    apiConfiguration: {
+        apiEndpoints: [
+            { method: 'GET', path: '/hello', delegate: SayHello }
+        ],
+        apiOptions: { noCorrelationId: true }
+    }, 
+};
 
-// api.path('POST', '/something', new PostSomething())
-
-api.init().then(() => {
-    api.listen()
+TotoMicroservice.init(config).then(microservice => {
+    microservice.start();
 });

@@ -1,5 +1,4 @@
-import { MongoClient } from 'mongodb';
-import { TotoControllerConfig, ValidatorProps, Logger, SecretsManager } from "toto-api-controller";
+import { APIOptions, TotoControllerConfig } from 'totoms';
 
 const dbName = 'mydb';
 const collections = {
@@ -8,35 +7,12 @@ const collections = {
 
 export class ControllerConfig extends TotoControllerConfig {
 
-    mongoUser: string | undefined;
-    mongoPwd: string | undefined;
-
-    async load(): Promise<any> {
-
-        let promises = [];
-
-        promises.push(super.load());
-
-        // Other possible secrets to load:
-        // mongo-user
-        // mongo-pswd
-        
-        await Promise.all(promises);
-
+    getMongoSecretNames(): { userSecretName: string; pwdSecretName: string; } | null {
+        return null;
     }
 
-    getProps(): ValidatorProps {
+    getProps(): APIOptions {
         return {}
     }
-
-    async getMongoClient() {
-
-        const mongoUrl = `mongodb://${this.mongoUser}:${this.mongoPwd}@${this.mongoHost}:27017/${dbName}`
-
-        return await new MongoClient(mongoUrl).connect();
-    }
-    
-    getDBName() { return dbName }
-    getCollections() { return collections }
 
 }

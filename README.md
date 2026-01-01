@@ -14,7 +14,7 @@ Go on Github and create a new Git Repo for `toto-ms-xyz`.
 
 ## 3. Set the new Origin URL
 CD to the target directory (`toto-ms-xyz`) and set the new Origin URL to the newly created repo for the new microservice. 
-```
+```bash
 git remote set-url origin <new-repo-url>
 ```
 
