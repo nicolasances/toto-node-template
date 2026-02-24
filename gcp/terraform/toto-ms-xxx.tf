@@ -54,6 +54,13 @@ resource "google_project_iam_member" "toto-ms-xxx-role-pubsub" {
     role = "roles/pubsub.publisher"
     member = format("serviceAccount:%s", google_service_account.toto-ms-xxx-service-account.email)
 }
+# UNCOMMENT IF WORKING WITH AI 
+# resource "google_project_iam_member" "toto-ms-xxx_role_aiplatform" {
+#     project = var.gcp_pid
+#     role = "roles/aiplatform.user"
+#     member = format("serviceAccount:%s", google_service_account.toto-ms-xxx-service-account.email)
+# }
+
 
 # --------------------------------------------------------------
 # 2. Artifact Repository
