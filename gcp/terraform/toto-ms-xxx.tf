@@ -3,29 +3,6 @@
 # YOU CAN DELETE THIS FILE AFTER RUNNING TERRAFORM
 # ###############################################################
 # ###############################################################
-# ---------------------------------------------------------------
-# 0. Artifact Registry
-# ---------------------------------------------------------------
-resource "google_artifact_registry_repository" "toto-ms-xxx-artifact-repo" {
-    location = var.gcp_region
-    repository_id = "toto-ms-xxx"
-    format = "DOCKER"
-    description = "Artifact Registry for toto-ms-xxx"
-
-    labels = {
-        "created_by" = "terraform"
-        "project" = var.gcp_pid
-    }
-    
-    cleanup_policy_dry_run = false
-    cleanup_policies {
-        id     = "keep-minimum-versions"
-        action = "KEEP"
-        most_recent_versions {
-            keep_count            = 1
-        }
-    }
-}
 
 # ---------------------------------------------------------------
 # 1. Service Account 
@@ -74,6 +51,15 @@ resource "google_artifact_registry_repository" "toto-ms-xxx-registry" {
     labels = {
         "created_by" = "terraform"
         "project" = var.gcp_pid
+    }
+    
+    cleanup_policy_dry_run = false
+    cleanup_policies {
+        id     = "keep-minimum-versions"
+        action = "KEEP"
+        most_recent_versions {
+            keep_count            = 1
+        }
     }
 }
 
