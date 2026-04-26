@@ -7,15 +7,16 @@
 # 0. Artifact Registry
 # ---------------------------------------------------------------
 resource "google_artifact_registry_repository" "toto-ms-xxx-artifact-repo" {
-    location = "europe-west1"
+    location = var.gcp_region
     repository_id = "toto-ms-xxx"
-    description = "Artifact Registry for toto-ms-xxx"
     format = "DOCKER"
-    
-    docker_config {
-        immutable_tags = true
-    }
+    description = "Artifact Registry for toto-ms-xxx"
 
+    labels = {
+        "created_by" = "terraform"
+        "project" = var.gcp_pid
+    }
+    
     cleanup_policy_dry_run = false
     cleanup_policies {
         id     = "keep-minimum-versions"
