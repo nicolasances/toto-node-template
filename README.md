@@ -40,6 +40,7 @@ To do that, follow this resource:
 
 Toto Microservices can be deployed:
 * [On GCP (Cloud Run)](#deploying-on-gcp-cloud-run)
+* [On GKE in a separate GCP project](#deploying-on-gke-separate-gcp-project)
 * [On AWS (ECS)](#deploying-on-aws-ecs)
 
 
@@ -71,6 +72,29 @@ To deploy this service on GCP (Cloud Run) you need to:
 
 4. Move the Terraform file to `toto-terra`, commit and **push**. <br>
 That will trigger a job on Terraform Cloud. 
+
+--- 
+### Deploying on GKE (Separate GCP Project)
+It is possible to deploy a microservice on a GKE cluster, in a **separate GCP Project**. 
+
+*Use this when you have access to a GKE cluster and want to deploy there the microservice*.
+
+To use this: 
+
+1. Make sure you have a **compliant GKE cluster**. Read the [Guide to Toto Terraforming for GKE](https://github.com/nicolasances/toto-terra-gke)
+
+2. As for a normal deployment on GCP, **move** the folder `.github` (under `gke-external`) to the root of the project - that takes care of the build and deploy pipeline, until the GCR stage.
+
+3. Uncomment the sections of the `release-*.yml` files that are commented. 
+
+4. Update the Terraform files in the `gke-external/terraform` folder: 
+    - Replace `<basepath>` with your microsrvice basepath. The basepath is **mandatory** in a GKE deployment as the Kubernetes Gateway routes based on that. 
+    - Replace all occurrences of `toto-ms-xxx` or `toto_ms_xxx` with the microservice name instead. 
+    - Rename the file to fit the microservice name
+
+4. Update ove the Terraform files from the `gke-external/terraform` folder to the `toto-terra-gke` project. **Commit and push**. 
+
+5. Go to your GCP project holding the GKE cluster and `terraform apply` the changes. That will deploy the microservice to the target environment. 
 
 ---
 ### Deploying on AWS (ECS)
