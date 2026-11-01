@@ -92,9 +92,9 @@ To use this:
     - Replace all occurrences of `toto-ms-xxx` or `toto_ms_xxx` with the microservice name instead. 
     - Rename the file to fit the microservice name
 
-4. Update ove the Terraform files from the `gke-external/terraform` folder to the `toto-terra-gke` project. **Commit and push**. 
+5. Move the Terraform files from the `gke-external/terraform` folder to the `toto-terra-gke` project. **Commit and push**. 
 
-5. Go to your GCP project holding the GKE cluster and `terraform apply` the changes. That will deploy the microservice to the target environment. 
+6. Go to your GCP project holding the GKE cluster and `terraform apply` the changes. That will deploy the microservice to the target environment. 
 
 ---
 ### Deploying on AWS (ECS)
