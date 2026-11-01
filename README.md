@@ -62,9 +62,7 @@ To deploy this service on GCP (Cloud Run) you need to:
 
 1. Make sure you have a **compliance GCP environment**. Follow the [Guide to Deploying Toto on GCP with Terraform](https://github.com/nicolasances/toto-terra). 
 
-1. **Move** the folder `.github` (under `gcp`) to the root of the project.
-
-2. Uncomment the sections of the `release-*.yml` files that are commented. 
+2. **Move** the folder `.github` (under `gcp`) to the root of the project.
 
 3. Fix the Terraform file (`gcp/terraform/toto-ms-xxx.tf`): 
     * Rename to the name of the microservice
