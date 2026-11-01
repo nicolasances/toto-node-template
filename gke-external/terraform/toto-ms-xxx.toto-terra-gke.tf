@@ -1,3 +1,14 @@
+# ###############################################################
+# ###############################################################
+# COPY THIS FILE TO toto-terra-gke, in the workloads/ folder
+# (renamed to <name of the microservice>.tf)
+#
+# It deploys the microservice in the dev and prod namespaces of the
+# GKE cluster and exposes it on the shared Gateway, under /<basepath>.
+# It uses locals, namespaces and the remote state defined in workloads/.
+# ###############################################################
+# ###############################################################
+
 # ---------------------------------------------------------------
 # 1. Kubernetes Service Account (one per environment namespace)
 # ---------------------------------------------------------------

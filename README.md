@@ -83,18 +83,33 @@ To use this:
 
 1. Make sure you have a **compliant GKE cluster**. Read the [Guide to Toto Terraforming for GKE](https://github.com/nicolasances/toto-terra-gke)
 
-2. As for a normal deployment on GCP, **move** the folder `.github` (under `gke-external`) to the root of the project - that takes care of the build and deploy pipeline, until the GCR stage.
+2. **Name and base path.** 
+    - The `name` in `package.json` **must be the microservice name** (e.g. `toto-ms-xyz`): the CI/CD pipeline uses it to name the Docker image and its Artifact Registry repository, and the Terraform files use the same name.
+    - Set a `basePath` in `src/index.ts` (e.g. `basePath: '/xyz'`). The basepath is **mandatory** on GKE: all microservices share the same hostname and the Kubernetes Gateway routes on the path, so it must be **unique** across microservices.
 
-3. Uncomment the sections of the `release-*.yml` files that are commented. 
+3. **Move** the folder `.github` (under `gke-external`) to the root of the project. <br>
+The `release-*.yml` workflows build the Docker image and push it to the environment's Artifact Registry, tagged with the `package.json` **version** (dev: on `feature/**` and `main`, prod: on `release/**`). They do not deploy: the deployment is done by Terraform (step 6).
 
 4. Update the Terraform files in the `gke-external/terraform` folder: 
-    - Replace `<basepath>` with your microsrvice basepath. The basepath is **mandatory** in a GKE deployment as the Kubernetes Gateway routes based on that. 
-    - Replace all occurrences of `toto-ms-xxx` or `toto_ms_xxx` with the microservice name instead. 
-    - Rename the file to fit the microservice name
+    - Replace all occurrences of `toto-ms-xxx` or `toto_ms_xxx` with the microservice name. 
+    - In `toto-ms-xxx.toto-terra-gke.tf`, replace `<basepath>` with the `basePath` of `src/index.ts` **without the leading slash**.
+    - In `toto-ms-xxx.toto-terra.tf`, remove the Mongo secrets if the microservice has no database, and uncomment the extra roles it needs (Cloud Storage, Pub/Sub, Vertex AI).
+    - Rename both files to `<microservice name>.tf`. *E.g.: `toto-ms-expenses`*
 
-5. Move the Terraform files from the `gke-external/terraform` folder to the `toto-terra-gke` project. **Commit and push**. 
+5. **toto-terra** (the toto GCP projects): move `toto-ms-xxx.toto-terra.tf` to `toto-terra`, commit and **push**, and apply it on **both** environments. <br>
+It creates the Artifact Registry repository (readable by the GKE nodes), the GitHub environment used by the pipeline, the secrets, and the IAM grants to the pod's identity (Workload Identity). <br>
+    - 5.1. **Push the microservice code**, so that the pipeline pushes the first image (step 3). **The image must exist before step 6**, otherwise the Deployment never becomes ready and the `terraform apply` times out.
 
-6. Go to your GCP project holding the GKE cluster and `terraform apply` the changes. That will deploy the microservice to the target environment. 
+6. **toto-terra-gke** (the GKE cluster): 
+    - Move `toto-ms-xxx.toto-terra-gke.tf` to the **`workloads/`** folder of `toto-terra-gke`, commit and **push**. 
+    - Add the image tag of each environment to `scripts/tf-env.template.sh` and to your own env file: <br>
+    `export TF_VAR_<microservice_name>_image_tag='{"dev":"1.0.0","prod":"1.0.0"}'` (`<microservice_name>` with underscores, e.g. `toto_ms_xyz`).
+    - On the Terraform VM: `source` your env file, then run `terraform apply` in `workloads/`. That deploys the microservice in the `dev` and `prod` namespaces and exposes it on `https://<environment hostname>/<basepath>`.
+
+#### Deploying a new version on GKE
+1. **Bump the `version` in `package.json`** and push: the pipeline pushes the image with the new tag. <br>
+*If the version is not bumped, the existing tag is overwritten with the new image: Terraform sees no change and the pods keep running the old image.*
+2. Update the version in `TF_VAR_<microservice_name>_image_tag` (only for the environment you deploy), `source` your env file, and `terraform apply` in `workloads/`.
 
 ---
 ### Deploying on AWS (ECS)

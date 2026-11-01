@@ -2,14 +2,18 @@ name: Dev Release
 
 on:
   push:
-    # branches: 
-    #   - 'feature/**'
-    #   - main
+    branches:
+      - 'feature/**'
+      - main
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
 
 jobs:
   # This workflow contains a single job called "release"
+  # The deployment on GKE is done by Terraform (toto-terra-gke), with the image tag = package.json version
   release:
-    name: Build & Deploy to Cloud run
+    name: Build & Push to Artifact Registry
     environment: totoexperiments
     runs-on: ubuntu-latest
 
@@ -17,25 +21,23 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    # - name: Authenticate to Artifact Registry
-    #   run: |
-    #     echo '${{ secrets.CICD_SERVICE_ACCOUNT }}' > ./credentials.json
-    #     gcloud auth activate-service-account --key-file=./credentials.json
-    #     gcloud auth configure-docker europe-west1-docker.pkg.dev
+    - name: Authenticate to Artifact Registry
+      run: |
+        echo '${{ secrets.CICD_SERVICE_ACCOUNT }}' > ./credentials.json
+        gcloud auth activate-service-account --key-file=./credentials.json
+        gcloud auth configure-docker europe-west1-docker.pkg.dev
 
+    - name: Create Environment Variables
+      run: |
+        export PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+        export PACKAGE_NAME=$(cat package.json | grep name | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+        echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
+        echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
 
-#     - name: Create Environment Variables
-#       run: |
-#         export PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
-#         export PACKAGE_NAME=$(cat package.json | grep name | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
-#         echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
-#         echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+    - name: Build Docker image
+      run: |
+        docker build . -t europe-west1-docker.pkg.dev/${{ vars.GCP_PID }}/${{env.PACKAGE_NAME}}/${{env.PACKAGE_NAME}}:${{env.PACKAGE_VERSION}}
 
-#     - name: Build Docker image
-#       run: |
-#         docker build . -t europe-west1-docker.pkg.dev/${{ vars.GCP_PID }}/${{env.PACKAGE_NAME}}/${{env.PACKAGE_NAME}}:${{env.PACKAGE_VERSION}}
- 
-#     - name: Push Docker image to Dockerhub 
-#       run: |
-#         docker push europe-west1-docker.pkg.dev/${{ vars.GCP_PID }}/${{env.PACKAGE_NAME}}/${{env.PACKAGE_NAME}}:${{env.PACKAGE_VERSION}}
-    
+    - name: Push Docker image to Artifact Registry
+      run: |
+        docker push europe-west1-docker.pkg.dev/${{ vars.GCP_PID }}/${{env.PACKAGE_NAME}}/${{env.PACKAGE_NAME}}:${{env.PACKAGE_VERSION}}
